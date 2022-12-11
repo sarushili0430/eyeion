@@ -6,12 +6,19 @@ import datetime
 import traceback
 import csv
 
-gui = BatteryGUI()
-#gui.root.after(3000,func=gui.change_rent_ui)
+#Specify the USB port of the device
+USB_PORT = "usb:001:002"
 
+"""
+Configuration
+    Args:
+    gui: The main gui application
+    student_id: Holds the student number
+    clf: NFC-reader Object
+"""
+gui = BatteryGUI()
 student_id = ""
-df = []
-clf = nfc.ContactlessFrontend('usb')
+clf = nfc.ContactlessFrontend(USB_PORT)
 print("found:", clf)
 
 def nfcreader():

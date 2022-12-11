@@ -9,8 +9,8 @@ RETURNMESSAGE = "Would you like to return a battery?"
 ROOT_BGCOLOR = "#CFF5E7"
 CLOCK_FONT = ("Helvetica Neue",75,"bold")
 DATE_FONT = ("Helvetica Neue",20,"bold")
-RETURN_MSG_FONT = ("Helvetica Neue",65,"bold")
-RENT_MSG_FONT = ("Helvetica Neue",75,"bold")
+RETURN_MSG_FONT = ("Helvetica Neue",57,"bold")
+RENT_MSG_FONT = ("Helvetica Neue",65,"bold")
 SID_FONT = ("Helvetica Neue",45,"bold")
 
 class BatteryGUI():
