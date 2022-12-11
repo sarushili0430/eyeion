@@ -1,4 +1,4 @@
-from guiforbattery3 import BatteryGUI
+from RaspiGUI import BatteryGUI
 from os.path import exists
 from writelog import *
 import nfc, time, threading
