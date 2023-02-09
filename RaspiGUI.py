@@ -21,7 +21,7 @@ class BatteryGUI():
         self.root = tk.Tk()
         self.root.config(bg=ROOT_BGCOLOR)
         self.root.title("Battery Rental Project")
-        self.root.geometry("640x400")
+        self.root.attributes('-fullscreen', True) #Making the app fullscreen
         self.root.grid_rowconfigure(0,weight=1)
         self.root.grid_columnconfigure(0,weight=1)
         #Setting the Date,Clock,Message component 
@@ -54,7 +54,7 @@ class BatteryGUI():
 
     def update_clock(self):
         now = datetime.now()
-        current_date = now.strftime("%m/%d/%y")
+        current_date = now.strftime("%y/%m/%d") #Making the time in ISO format
         current_time = now.strftime("%H:%M:%S")
         self.clock.config(text=current_time)
         self.date.config(text=current_date)

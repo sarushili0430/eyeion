@@ -7,7 +7,7 @@ import traceback
 import csv
 
 #Specify the USB port of the device
-USB_PORT = "usb:001:002"
+USB_PORT = "usb:054c:06c1"
 
 """
 Configuration
