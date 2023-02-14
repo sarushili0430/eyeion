@@ -7,7 +7,7 @@ import traceback
 import csv
 
 #Specify the USB port of the device
-USB_PORT = "usb:054c:06c1"
+USB_PORTS = ["usb:054c:06c1","usb:054c:06c3"]
 
 """
 Configuration
@@ -18,10 +18,32 @@ Configuration
 """
 gui = BatteryGUI()
 student_id = ""
-clf = nfc.ContactlessFrontend(USB_PORT)
-print("found:", clf)
+clf = None
+card_reader_active = threading.Event()
+
+#Activating the NFC reader
+def activate_reader():
+    global clf
+    for port in USB_PORTS:
+        try:
+            print(port)
+            print(nfc.ContactlessFrontend(port))
+            clf = nfc.ContactlessFrontend(port)
+            print("found:", clf)
+            print("App successfully launched!")
+            break
+        except Exception as e:
+            print(str(e))
+    else:
+        gui.print_errmsg("ERROR: Card reader not found")
+        card_reader_active.set()
+
 
 def nfcreader():
+    activate_reader()
+    #Check whether the card reader is active or not
+    if card_reader_active.is_set():
+        return
     try:
         prev = None
         when = time.time()
@@ -47,12 +69,25 @@ def nfcreader():
             else:
                 when = now
                 time.sleep(1)
-    except Exception:
-        e = traceback.format_exc()
-        print(e)
+    except Exception as e:
+        gui.print_errmsg("ERROR: Please touch the card again")
     clf.close()
 
+#Monitors the nfcreader thread (thread1)
+def thread_monitor():
+    global thread1
+    while True:
+        #print(thread1.is_alive())
+        if card_reader_active.is_set():
+            break
+        if thread1.is_alive() == False:
+            thread1 = threading.Thread(target=nfcreader)
+            thread1.start()
+
+
+thread2 = threading.Thread(target=thread_monitor)
 thread1 = threading.Thread(target=nfcreader)
 thread1.start()
+thread2.start()
 
 gui.root.mainloop()
