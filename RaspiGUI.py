@@ -1,5 +1,5 @@
 from tkinter import messagebox
-from writelog import WriteLog,WriteState
+from writelog import CheckRentalTime
 from datetime import datetime
 from subprocess import call
 import tkinter as tk
@@ -27,8 +27,8 @@ class BatteryGUI():
         self.root.attributes('-fullscreen', True)
         self.root.grid_rowconfigure(0,weight=1)
         self.root.grid_columnconfigure(0,weight=1)
-        self.shutdown_img = tk.PhotoImage(file="power-off.png")
-        self.reboot_img = tk.PhotoImage(file="power-restart.png")
+        self.shutdown_img = tk.PhotoImage(file="img/power-off.png")
+        self.reboot_img = tk.PhotoImage(file="img/power-restart.png")
         self.msg_event = None #Checks whether the tk.after method is triggered
         #Setting the Date,Clock,Message component 
         self.date = tk.Label(self.root,text="22/11/19",font=DATE_FONT,background=ROOT_BGCOLOR,pady=-10)
@@ -40,8 +40,9 @@ class BatteryGUI():
         self.date.pack()
         self.clock.pack()
         self.shutdown_button.place(x=5,y=5)
-        self.reboot_button.place(x=5,y=75)
-        self.message = tk.Label(self.root,background=ROOT_BGCOLOR)
+        self.reboot_button.place(x=5,y=80)
+        self.status_print = tk.Label(self.root,background=ROOT_BGCOLOR)
+        self.rentaltime_print = tk.Label(self.root,background=ROOT_BGCOLOR)
         self.sid_print = tk.Label(self.root,background=ROOT_BGCOLOR)
         self.update_clock()
     
@@ -50,15 +51,16 @@ class BatteryGUI():
         self.sid_print.config(text=sid,font=SID_FONT)
         self.sid_print.pack(pady=5)
         if status == "RENT":
-            self.message.config(text="Battery Rent",fg=RENT_COLOR,highlightbackground=RENT_COLOR,font=RENT_MSG_FONT)
-            self.message.pack(pady=5)
+            self.status_print.config(text="Battery Rent",fg=RENT_COLOR,highlightbackground=RENT_COLOR,font=RENT_MSG_FONT)
+            self.status_print.pack(pady=5)
             print(self.msg_event)
             if self.msg_event:
                 self.root.after_cancel(self.msg_event)
             self.msg_event = self.root.after(ms=3000,func=self.reset)
         elif status == "RETURN":
-            self.message.config(text="Battery Return",fg=RETURN_COLOR,highlightbackground=RETURN_COLOR,font=RETURN_MSG_FONT)
-            self.message.pack(pady=5)
+            self.status_print.config(text="Battery Return",fg=RETURN_COLOR,highlightbackground=RETURN_COLOR,font=RETURN_MSG_FONT)
+            self.status_print.pack(pady=5)
+            self.print_rentaltime(sid=sid)
             print(self.msg_event)
             if self.msg_event:
                 self.root.after_cancel(self.msg_event)
@@ -66,9 +68,16 @@ class BatteryGUI():
         else:
             raise ValueError("Value not valid.")
     
+    def print_rentaltime(self,sid:str):
+        #Change the color of the font depending on the rental period
+        rental_hour,rental_min = CheckRentalTime(sid=sid)
+        self.rentaltime_print.config(text=f"Rental time: {rental_hour}:{rental_min}",highlightbackground=RENT_COLOR,font=RETURN_MSG_FONT)
+        self.rentaltime_print.pack(pady=5)
+
     def reset(self):
-        self.message.forget()
+        self.status_print.forget()
         self.sid_print.forget()
+        self.rentaltime_print.forget()
         self.msg_event = None
     
     def system_shutdown(self):
@@ -88,10 +97,9 @@ class BatteryGUI():
         self.clock.config(text=current_time)
         self.date.config(text=current_date)
         self.root.after(ms=1000,func=self.update_clock)
-
+    
     def print_errmsg(self,text):
-        self.message.config(text=text,fg=RENT_COLOR,highlightbackground=RENT_COLOR,font=RENT_MSG_FONT)
-        self.message.pack(pady=5)
-        pass
+        self.status_print.config(text=text,fg=RENT_COLOR,highlightbackground=RENT_COLOR,font=RENT_MSG_FONT)
+        self.status_print.pack(pady=5)
     
 

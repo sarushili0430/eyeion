@@ -20,6 +20,7 @@ gui = BatteryGUI()
 student_id = ""
 clf = None
 card_reader_active = threading.Event()
+clf_isclosed = True
 
 #Activating the NFC reader
 def activate_reader():
@@ -40,7 +41,11 @@ def activate_reader():
 
 
 def nfcreader():
-    activate_reader()
+    global clf_isclosed
+    #Check whether the connection is closed or not
+    if clf_isclosed == True:
+        activate_reader()
+        clf_isclosed = False
     #Check whether the card reader is active or not
     if card_reader_active.is_set():
         return
@@ -70,8 +75,14 @@ def nfcreader():
                 when = now
                 time.sleep(1)
     except Exception as e:
-        gui.print_errmsg("ERROR: Please touch the card again")
+        gui.reset()
+        print(e)
+        if str(e) == "invalid service code number or attribute":
+            gui.print_errmsg("ERROR: Please touch the card again")
+            return
     clf.close()
+    clf_isclosed = True
+    print(clf)
 
 #Monitors the nfcreader thread (thread1)
 def thread_monitor():
@@ -83,7 +94,6 @@ def thread_monitor():
         if thread1.is_alive() == False:
             thread1 = threading.Thread(target=nfcreader)
             thread1.start()
-
 
 thread2 = threading.Thread(target=thread_monitor)
 thread1 = threading.Thread(target=nfcreader)
