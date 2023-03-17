@@ -56,6 +56,7 @@ class BatteryGUI():
             print(self.msg_event)
             if self.msg_event:
                 self.root.after_cancel(self.msg_event)
+                self.rentaltime_print.forget()
             self.msg_event = self.root.after(ms=3000,func=self.reset)
         elif status == "RETURN":
             self.status_print.config(text="Battery Return",fg=RETURN_COLOR,highlightbackground=RETURN_COLOR,font=RETURN_MSG_FONT)

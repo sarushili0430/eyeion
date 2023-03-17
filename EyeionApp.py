@@ -63,7 +63,7 @@ def nfcreader():
             data = tag.read_without_encryption(scs, bcs)
             student_id = data[2:10].decode()
             now  = time.time()
-            if now-when > 2 or student_id != prev:
+            if now-when > 1.5 or student_id != prev:
                 prev = student_id
                 when = now
                 status = CheckStatus(sid=student_id)
@@ -75,11 +75,11 @@ def nfcreader():
                 when = now
                 time.sleep(1)
     except Exception as e:
-        gui.reset()
         print(e)
-        if str(e) == "invalid service code number or attribute":
-            gui.print_errmsg("ERROR: Please touch the card again")
-            return
+        #if str(e) == "invalid service code number or attribute":
+        #    gui.reset()
+        #    gui.print_errmsg("ERROR: Please touch the card again")
+        #    return
     clf.close()
     clf_isclosed = True
     print(clf)

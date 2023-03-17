@@ -24,7 +24,7 @@ def CheckStatus(sid:str) -> str:
 
     global df
     df = []
-    date = datetime.datetime.now().strftime("%m/%d/%y")
+    date = datetime.datetime.now().strftime("%Y%m%d")
     return_date = datetime.datetime.today() + datetime.timedelta(days=2)
     timestamp = datetime.datetime.now().timestamp()
 
@@ -36,8 +36,8 @@ def CheckStatus(sid:str) -> str:
     if exists("csvfiles/total_rental_state_file.csv") == False:
         with open("csvfiles/total_rental_state_file.csv","w",newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["Student","Loan Status","Start_Date","End_Date","Timestamp"])
-            df.append(["Student","Loan Status","Start_Date","End_Date","Timestamp"])
+            writer.writerow(["Student","Loan Status","Start_Date","End_Date","Days_Remaining","Timestamp"])
+            df.append(["Student","Loan Status","Start_Date","End_Date","Days_Remaining","Timestamp"])
     else:
         with open("csvfiles/total_rental_state_file.csv","r",newline="") as f:
             reader = csv.reader(f,delimiter=",")
@@ -52,15 +52,17 @@ def CheckStatus(sid:str) -> str:
         print(row)
         if sid in row and row[1] == 'On Loan':
             row[1] = "Returned"
-            row[4] = timestamp
+            row[4] = "NA"
+            row[5] = timestamp
             return "RETURN"
         elif sid in row:
             row[1] = "On Loan"
             row[2] = date
-            row[3] = return_date.strftime("%m/%d/%y")
-            row[4] = timestamp
+            row[3] = return_date.strftime("%Y%m%d")
+            row[4] = "NA"
+            row[5] = timestamp
             return "RENT"
-    df.append([sid,"On Loan",date,return_date,timestamp])
+    df.append([sid,"On Loan",date,return_date,"tbd",timestamp])
     return "RENT"
 
 def CheckRentalTime(sid,*args):
@@ -72,7 +74,7 @@ def CheckRentalTime(sid,*args):
         reader = csv.reader(f,delimiter=",")
         for row in reader:
             if row[0] == sid:
-                rental_time = now - float(row[4]) #Time duration in seconds
+                rental_time = now - float(row[5]) #Time duration in seconds
                 rental_hour = int(rental_time // 3600)
                 rental_min = int((rental_time % 3600)/60)
                 if rental_min < 10: rental_min = "0" + str(rental_min)
